@@ -8,34 +8,26 @@ let lampRef = admin.database().ref('/lamp');
 
 exports.hey = functions.https.onRequest((request, response) => {
     lampRef.update({
-        lampno : request.query.lampno, 
+        state : request.query.state, 
         //state : request.query.state
     })
     .then(()=>
-        response.send({status:200,message:"waiting"})
+        response.send("200")
     )
     .catch((err) => {
         console.log("error" + err)
-        return response.send({ status: 500, message: err });
+        return response.send("500");
     })
 });
 exports.areyoucallingme = functions.https.onRequest((request, response) => {
-    const lampid = request.query.iamlamp
     lampRef.once("value")
         .then(doc => {
             let obj = doc.toJSON();
-            if (obj.lampno === lampid) {
-                lampRef.update({
-                    lampno: 0,
-                })
-                return response.send({ status: 200, message: "Yes" })
-            }
-            else
-                return response.send({ status: 201, message: "No" })
+            return response.send(obj.state)
         })
         .catch((err) => {
             console.log("error" + err)
-            return response.send({ status: 500, message: err });
+            return response.send("500");
         })
 });
 /*
